@@ -39,7 +39,7 @@ function LoginPage(): JSX.Element {
           <LoginForm/>
           <section className="locations locations--login locations--current">
             <div className="locations__item">
-              <button className="locations__item-link" type='button' onClick={handleButtonRandomClick}>
+              <button className="locations__item-link" type='button' onClick={handleButtonRandomClick} style={{ border: 'none' }}>
                 <span>{randomCity.name}</span>
               </button>
             </div>

@@ -1,4 +1,4 @@
-import {memo, useState, useCallback} from 'react';
+import {memo, useState, useCallback,useEffect } from 'react';
 import {Link} from 'react-router-dom';
 import {AppRoute} from '../../const';
 import { Offer } from '../../types/offers-types';
@@ -13,6 +13,13 @@ type OfferCardProps = {
 
 function OfferCard({offer, type, onOfferCardHover}: OfferCardProps): JSX.Element {
   const [activeFavorite, setActiveFavorite] = useState(offer.isFavorite);
+
+  useEffect(() => {
+    const favoriteFromStorage = localStorage.getItem(`favorite_${offer.id}`);
+    if (favoriteFromStorage === 'true') {
+      setActiveFavorite(true);
+    }
+  }, [offer.id]);
 
   const handleOfferCardHover = useCallback(() => {
     onOfferCardHover?.(offer.id);

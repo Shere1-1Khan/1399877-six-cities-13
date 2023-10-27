@@ -1,5 +1,5 @@
-import { useRef, useState, useEffect, MutableRefObject } from 'react';
-import { Map, TileLayer, Icon, Marker } from 'leaflet';
+import { useRef, useState, useEffect, MutableRefObject, useMemo } from 'react';
+import { Map, TileLayer, Icon, Marker, LayerGroup } from 'leaflet';
 import { City, Offer } from '../types/offers-types';
 import { URL_MARKER_CURRENT, URL_MARKER_DEFAULT } from '../const';
 
@@ -18,7 +18,7 @@ const currentCustomIcon = new Icon({
 type UseMapProps = {
   city: City;
   points: Offer[];
-  selectedPoint: Offer | undefined;
+  selectedPoint?: Offer | undefined;
 };
 
 export default function useMap(
@@ -28,6 +28,8 @@ export default function useMap(
   const [map, setMap] = useState<Map | null>(null);
   const isRenderedRef = useRef<boolean>(false);
   const { city, points, selectedPoint } = prop;
+
+  const markersLayer = useMemo(() => new LayerGroup(), []);
 
   useEffect(() => {
     if (mapRef.current && !isRenderedRef.current) {
@@ -51,11 +53,16 @@ export default function useMap(
 
       setMap(instance);
       isRenderedRef.current = true;
+
+      markersLayer.addTo(instance);
     }
-  }, [mapRef, city]);
+  }, [mapRef, city, markersLayer]);
 
   useEffect(() => {
     if (map) {
+      // Очищаем предыдущие маркеры
+      markersLayer.clearLayers();
+
       if (city) {
         map.setView(
           [city.location.latitude, city.location.longitude],
@@ -68,15 +75,15 @@ export default function useMap(
             lng: offer.location.longitude,
           });
 
-          marker
-            .setIcon(
-              selectedPoint && selectedPoint.id === offer.id
-                ? currentCustomIcon
-                : defaultCustomIcon
-            )
-            .addTo(map);
+          marker.setIcon(
+            selectedPoint && selectedPoint.id === offer.id
+              ? currentCustomIcon
+              : defaultCustomIcon
+          );
+
+          markersLayer.addLayer(marker);
         });
       }
     }
-  }, [map, points, selectedPoint, city]);
+  }, [map, points, selectedPoint, city, markersLayer]);
 }

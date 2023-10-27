@@ -6,7 +6,7 @@ import classNames from 'classnames';
 type OffersListProps = {
   offers: Offer[];
   type: 'cities' | 'near-places' | 'favorites';
-  onOfferCardHover: (id: string | undefined) => void;
+  onOfferCardHover?: (id: string | undefined) => void;
 }
 
 function OffersList({offers, type, onOfferCardHover}: OffersListProps): JSX.Element {
